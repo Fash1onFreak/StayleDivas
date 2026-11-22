@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Modni Salon: Dogodki & Stil</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+<style>
+:root {
+--primary: #ec4899;
+--primary-dark: #db2777;
+--gold: #f59e0b;
+}
+body {
+font-family: 'Outfit', sans-serif;
+background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 45%, #f5f3ff 100%);
+min-height: 100vh;
+overflow-x: hidden;
+-webkit-tap-highlight-color: transparent;
+user-select: none;
+}
+.font-display {
+font-family: 'Playfair Display', serif;
+}
+/* Boutique glass card /
+.glass-panel {
+background: rgba(255, 255, 255, 0.85);
+backdrop-filter: blur(14px);
+-webkit-backdrop-filter: blur(14px);
+border: 1px solid rgba(255, 255, 255, 0.9);
+box-shadow: 0 12px 35px -8px rgba(219, 39, 119, 0.14);
+}
+/* Custom scrollbar for options /
+.salon-scroll::-webkit-scrollbar {
+width: 6px;
+height: 6px;
+}
+.salon-scroll::-webkit-scrollbar-track {
+background: rgba(244, 114, 182, 0.08);
+border-radius: 999px;
+}
+.salon-scroll::-webkit-scrollbar-thumb {
+background: rgba(236, 72, 153, 0.35);
+border-radius: 999px;
+}
+/* Sparkle / Heart floating animation /
+@keyframes floatSparkle {
+0% {
+opacity: 1;
+transform: translate(-50%, -50%) scale(0.5) rotate(0deg);
+}
+60% {
+opacity: 1;
+transform: translate(-50%, -140%) scale(1.2) rotate(15deg);
+}
+100% {
+opacity: 0;
+transform: translate(-50%, -220%) scale(0.8) rotate(-10deg);
+}
+}
+.sparkle-burst {
+position: fixed;
+pointer-events: none;
+z-index: 60;
+animation: floatSparkle 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+/* Subtle breathing animation on avatar /
+@keyframes gentleBreathe {
+0%, 100% { transform: translateY(0px); }
+50% { transform: translateY(-3px); }
+}
+.avatar-breathe {
+animation: gentleBreathe 3.8s ease-in-out infinite;
+}
+/* Glam button shine /
+.btn-glam {
+background: linear-gradient(135deg, #f43f5e 0%, #ec4899 50%, #a855f7 100%);
+box-shadow: 0 8px 20px -4px rgba(236, 72, 153, 0.48);
+transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.btn-glam:hover {
+transform: translateY(-2px) scale(1.02);
+box-shadow: 0 12px 26px -4px rgba(236, 72, 153, 0.6);
+}
+.btn-glam:active {
+transform: translateY(1px) scale(0.98);
+}
+/* Option tile /
+.option-tile {
+transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.option-tile:hover {
+transform: translateY(-2px);
+}
+.option-tile:active {
+transform: scale(0.95);
+}
+/* Confetti canvas /
+#confetti-canvas {
+position: fixed;
+inset: 0;
+pointer-events: none;
+z-index: 100;
+}
+/* Modal transition /
+@keyframes popIn {
+0% { opacity: 0; transform: scale(0.88) translateY(14px); }
+100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-pop {
+animation: popIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+</style>
+</head>
+<body class="text-slate-800 flex flex-col">
+<!-- Confetti Canvas for Event Evaluation -->
+<canvas id="confetti-canvas"></canvas>
+<!-- Top Header & Event Selector -->
+<header class="w-full max-w-6xl mx-auto px-3 pt-3 pb-2 z-20">
+<div class="glass-panel rounded-3xl px-4 py-3 flex flex-col gap-3">
+<!-- Title & Score Badge -->
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-2.5">
+<div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-500 to-purple-500 flex items-center justify-center text-white text-xl shadow-md">
+✨
+</div>
+<div>
+<h1 class="font-display text-lg sm:text-xl font-bold text-slate-900 leading-tight">
+Modni Salon: <span class="text-pink-600">Dogodki & Stil</span>
+</h1>
+<p class="text-xs text-slate-500 hidden sm:block">Uredi frizuro, ličila in obleko za vsak dogodek!</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 shadow-sm">
+<span class="text-base">👑</span>
+<span class="text-xs sm:text-sm font-bold text-amber-800" id="total-stars-display">0 ★</span>
+</div>
+<button onclick="randomizeLook(event)" title="Naključni stil" class="p-2.5 rounded-2xl bg-pink-50 hover:bg-pink-100 text-pink-600 border border-pink-200 transition active:scale-95 text-sm font-semibold flex items-center gap-1">
+<span>🎲</span>
+<span class="hidden md:inline">Naključno</span>
+</button>
+</div>
+</div>
+<!-- Event Selector Pills -->
+<div class="flex items-center gap-2 overflow-x-auto salon-scroll pb-1" id="event-selector">
+<!-- Populated by JS -->
+</div>
+<!-- Current Event Theme Banner -->
+<div class="bg-gradient-to-r from-pink-50 via-purple-50 to-amber-50 border border-pink-200/70 rounded-2xl px-3.5 py-2 flex items-center justify-between gap-2">
+<div class="flex items-center gap-2 text-xs sm:text-sm">
+<span class="text-lg" id="event-banner-icon">🎬</span>
+<div>
+<span class="font-bold text-pink-700" id="event-banner-title">Rdeča preproga:</span>
+<span class="text-slate-700" id="event-banner-hint">Glamurozna večerna obleka, drzna šminka in bleščeč nakit!</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Studio Area -->
+<main class="flex-1 w-full max-w-6xl mx-auto px-3 pb-4 pt-1 grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+<!-- Left / Top Stage: Character Avatar Display -->
+<section class="lg:col-span-5 glass-panel rounded-3xl p-4 flex flex-col items-center justify-between relative overflow-hidden min-h-[380px] sm:min-h-[440px]">
+<!-- Dynamic Scenic Backdrop -->
+<div id="stage-backdrop" class="absolute inset-0 transition-all duration-500 opacity-95"></div>
+<!-- Decorative Lights / Bokeh -->
+<div class="absolute top-4 left-4 w-20 h-20 bg-white/30 rounded-full blur-xl pointer-events-none"></div>
+<div class="absolute bottom-12 right-6 w-28 h-28 bg-pink-300/30 rounded-full blur-2xl pointer-events-none"></div>
+<!-- Top Stage Controls: Skin Tone & Reset -->
+<div class="relative z-10 w-full flex items-center justify-between gap-2">
+<div class="bg-white/85 backdrop-blur-md px-2.5 py-1.5 rounded-2xl border border-white shadow-sm flex items-center gap-1.5">
+<span class="text-[11px] font-semibold text-slate-500 mr-0.5">Polt:</span>
+<button onclick="setSkinTone('#FDE2D2', '#F5C4AB', event)" class="w-5 h-5 rounded-full border-2 border-white shadow-sm transition transform hover:scale-110" style="background:#FDE2D2" title="Svetla polt"></button>
+<button onclick="setSkinTone('#F3C6A5', '#E0A680', event)" class="w-5 h-5 rounded-full border-2 border-white shadow-sm transition transform hover:scale-110" style="background:#F3C6A5" title="Topla bež"></button>
+<button onclick="setSkinTone('#D99B72', '#BE7E56', event)" class="w-5 h-5 rounded-full border-2 border-white shadow-sm transition transform hover:scale-110" style="background:#D99B72" title="Zagorela polt"></button>
+<button onclick="setSkinTone('#9C6142', '#7E492E', event)" class="w-5 h-5 rounded-full border-2 border-white shadow-sm transition transform hover:scale-110" style="background:#9C6142" title="Temna polt"></button>
+</div>
+<button onclick="resetLook(event)" class="bg-white/85 hover:bg-white text-slate-600 text-xs font-semibold px-3 py-1.5 rounded-2xl border border-white shadow-sm transition active:scale-95">
+↺ Ponastavi
+</button>
+</div>
+<!-- SVG Fashion Doll Avatar -->
+<div class="relative z-10 flex-1 flex items-center justify-center w-full my-1">
+<svg id="fashion-avatar" viewBox="0 0 320 460" class="w-full max-w-[270px] sm:max-w-[300px] h-auto drop-shadow-xl avatar-breathe">
+<defs>
+<linearGradient id="stageFloorGrad" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#ffffff" stop-opacity="0.65" />
+<stop offset="100%" stop-color="#f472b6" stop-opacity="0.2" />
+</linearGradient>
+<filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+<feGaussianBlur stdDeviation="2.5" result="blur" />
+<feComposite in="SourceGraphic" in2="blur" operator="over" />
+</filter>
+</defs>
+<!-- Podium Shadow -->
+<ellipse cx="160" cy="434" rx="82" ry="14" fill="url(#stageFloorGrad)" />
+<ellipse cx="160" cy="434" rx="54" ry="8" fill="#000000" opacity="0.12" />
+<!-- LAYER 1: Back Hair -->
+<g id="layer-hair-back"></g>
+<!-- LAYER 2: Body, Neck, Arms & Legs -->
+<g id="layer-body">
+<!-- Legs -->
+<path d="M137 265 L133 360 L138 422 L149 422 L152 355 L157 270 Z" class="skin-fill" fill="#F3C6A5" />
+<path d="M183 265 L187 360 L182 422 L171 422 L168 355 L163 270 Z" class="skin-fill" fill="#F3C6A5" />
+<!-- Knee subtle shading -->
+<ellipse cx="143" cy="345" rx="4" ry="6" class="skin-shade" fill="#E0A680" opacity="0.35" />
+<ellipse cx="177" cy="345" rx="4" ry="6" class="skin-shade" fill="#E0A680" opacity="0.35" />
+<!-- Left & Right Arms (Graceful Fashion Pose) -->
+<path d="M126 154 C107 175, 102 206, 114 234 C118 242, 125 244, 128 238 C122 215, 124 188, 134 166 Z" class="skin-fill" fill="#F3C6A5" />
+<path d="M194 154 C213 175, 218 206, 206 234 C202 242, 195 244, 192 238 C198 215, 196 188, 186 166 Z" class="skin-fill" fill="#F3C6A5" />
+<!-- Torso & Shoulders -->
+<path d="M150 124 L170 124 L173 145 C186 148, 195 153, 196 162 L185 206 C182 216, 188 235, 191 258 L129 258 C132 235, 138 216, 135 206 L124 162 C125 153, 134 148, 147 145 Z" class="skin-fill" fill="#F3C6A5" />
+<!-- Collarbone & Neck Shadow -->
+<path d="M150 132 Q160 139 170 132 L170 124 L150 124 Z" class="skin-shade" fill="#E0A680" opacity="0.55" />
+<path d="M140 154 Q152 158 157 154" stroke="#E0A680" stroke-width="1.5" fill="none" opacity="0.6" stroke-linecap="round" />
+<path d="M180 154 Q168 158 163 154" stroke="#E0A680" stroke-width="1.5" fill="none" opacity="0.6" stroke-linecap="round" />
+</g>
+<!-- LAYER 3: Shoes -->
+<g id="layer-shoes"></g>
+<!-- LAYER 4: Outfit / Dress -->
+<g id="layer-outfit"></g>
+<!-- LAYER 5: Necklace Accessory -->
+<g id="layer-necklace"></g>
+<!-- LAYER 6: Head & Face -->
+<g id="layer-head">
+<!-- Ears -->
+<ellipse cx="125" cy="94" rx="5" ry="9" class="skin-fill" fill="#F3C6A5" />
+<ellipse cx="195" cy="94" rx="5" ry="9" class="skin-fill" fill="#F3C6A5" />
+<!-- Face Shape -->
+<path d="M127 76 C127 50, 193 50, 193 76 C193 105, 178 126, 160 128 C142 126, 127 105, 127 76 Z" class="skin-fill" fill="#F3C6A5" />
+<!-- Chin subtle highlight -->
+<ellipse cx="160" cy="121" rx="7" ry="3" fill="#ffffff" opacity="0.2" />
+</g>
+<!-- LAYER 7: Makeup (Eyeshadow, Blush, Lips) & Eyes -->
+<g id="layer-makeup">
+<!-- Eyeshadow -->
+<ellipse id="eyeshadow-left" cx="144" cy="84" rx="11" ry="6.5" fill="#d946ef" opacity="0.45" />
+<ellipse id="eyeshadow-right" cx="176" cy="84" rx="11" ry="6.5" fill="#d946ef" opacity="0.45" />
+<!-- Blush -->
+<ellipse id="blush-left" cx="138" cy="101" rx="9" ry="5" fill="#fb7185" opacity="0.45" />
+<ellipse id="blush-right" cx="182" cy="101" rx="9" ry="5" fill="#fb7185" opacity="0.45" />
+<!-- Eyes (Almond Stylish Eyes) -->
+<!-- Left Eye -->
+<path d="M135 86 Q144 79 153 86 Q144 92 135 86 Z" fill="#ffffff" />
+<circle cx="144" cy="86" r="4.6" fill="#4f46e5" id="iris-left" />
+<circle cx="144" cy="86" r="2.3" fill="#1e1b4b" />
+<circle cx="142.5" cy="84.5" r="1.4" fill="#ffffff" />
+<!-- Eyeliner & Lashes Left -->
+<path d="M133 85 Q144 78 154 86" stroke="#1e1b4b" stroke-width="2" fill="none" stroke-linecap="round" />
+<path d="M134 85 L130 82 M137 83 L134 80" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+<!-- Right Eye -->
+<path d="M167 86 Q176 79 185 86 Q176 92 167 86 Z" fill="#ffffff" />
+<circle cx="176" cy="86" r="4.6" fill="#4f46e5" id="iris-right" />
+<circle cx="176" cy="86" r="2.3" fill="#1e1b4b" />
+<circle cx="174.5" cy="84.5" r="1.4" fill="#ffffff" />
+<!-- Eyeliner & Lashes Right -->
+<path d="M166 86 Q176 78 187 85" stroke="#1e1b4b" stroke-width="2" fill="none" stroke-linecap="round" />
+<path d="M186 85 L190 82 M183 83 L186 80" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+<!-- Eyebrows -->
+<path d="M134 76 Q143 72 152 76" stroke="#4a3525" stroke-width="2" fill="none" stroke-linecap="round" class="brow-stroke" />
+<path d="M168 76 Q177 72 186 76" stroke="#4a3525" stroke-width="2" fill="none" stroke-linecap="round" class="brow-stroke" />
+<!-- Cute Nose -->
+<path d="M159 92 L158 99 Q160 101 162 99" stroke="#c88a65" stroke-width="1.4" fill="none" stroke-linecap="round" />
+<!-- Lips -->
+<g id="lips-group">
+<!-- Upper Lip -->
+<path id="lip-upper" d="M151 110 Q156 107 160 109 Q164 107 169 110 Q160 112 151 110 Z" fill="#e11d48" />
+<!-- Lower Lip -->
+<path id="lip-lower" d="M151 110 Q160 118 169 110 Q160 112 151 110 Z" fill="#f43f5e" />
+<!-- Lip Gloss Shine -->
+<ellipse cx="160" cy="113" rx="3.5" ry="1" fill="#ffffff" opacity="0.55" />
+</g>
+</g>
+<!-- LAYER 8: Front Hair & Bangs -->
+<g id="layer-hair-front"></g>
+<!-- LAYER 9: Head Accessories (Tiara, Sunglasses, Hat, Flowers) -->
+<g id="layer-head-acc"></g>
+<!-- LAYER 10: Handbags / Handheld Accessories -->
+<g id="layer-hand-acc"></g>
+</svg>
+</div>
+<!-- Bottom Stage Action: Rate Look Button -->
+<div class="relative z-10 w-full pt-1">
+<button onclick="evaluateLook(event)" class="btn-glam w-full py-3.5 px-6 rounded-2xl text-white font-bold text-base sm:text-lg tracking-wide flex items-center justify-center gap-2 cursor-pointer">
+<span>✨ Oceni videz!</span>
+<span class="text-xl">📸</span>
+</button>
+</div>
+</section>
+<!-- Right / Bottom Panel: Salon Customization Studio -->
+<section class="lg:col-span-7 glass-panel rounded-3xl p-4 flex flex-col justify-between">
+<div>
+<!-- Salon Category Tabs -->
+<div class="grid grid-cols-4 gap-1.5 sm:gap-2 bg-pink-100/70 p-1.5 rounded-2xl mb-4" id="salon-tabs">
+<button onclick="switchTab('hair')" data-tab="hair" class="tab-btn py-2.5 px-2 rounded-xl font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 transition bg-white text-pink-600 shadow-sm">
+<span class="text-base sm:text-lg">💇‍♀️</span>
+<span>Frizura</span>
+</button>
+<button onclick="switchTab('makeup')" data-tab="makeup" class="tab-btn py-2.5 px-2 rounded-xl font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 transition text-slate-600 hover:text-pink-600">
+<span class="text-base sm:text-lg">💄</span>
+<span>Ličila</span>
+</button>
+<button onclick="switchTab('outfit')" data-tab="outfit" class="tab-btn py-2.5 px-2 rounded-xl font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 transition text-slate-600 hover:text-pink-600">
+<span class="text-base sm:text-lg">👗</span>
+<span>Obleka</span>
+</button>
+<button onclick="switchTab('accessories')" data-tab="accessories" class="tab-btn py-2.5 px-2 rounded-xl font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 transition text-slate-600 hover:text-pink-600">
+<span class="text-base sm:text-lg">👜</span>
+<span>Dodatki</span>
+</button>
+</div>
+<!-- Tab Content Container -->
+<div id="tab-content" class="space-y-4 max-h-[370px] sm:max-h-[420px] overflow-y-auto salon-scroll pr-1">
+<!-- Populated dynamically by JS -->
+</div>
+</div>
+<!-- Subtle Helpful Tip Footer -->
+<div class="mt-4 pt-3 border-t border-pink-100 flex items-center justify-between text-xs text-slate-500">
+<span>💡 Namig: Uskladi barve in slog z izbranim dogodkom za 5 zvezdic!</span>
+<span class="font-semibold text-pink-600" id="style-match-hint">Pripravljena na pisto</span>
+</div>
+</section>
+</main>
+<!-- Evaluation Result Modal -->
+<div id="result-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+<div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-pink-200 modal-pop relative overflow-hidden">
+<!-- Top decorative gradient ribbon -->
+<div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-pink-500 via-purple-500 to-amber-400"></div>
+<div class="text-center">
+<div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-pink-50 text-3xl mb-2 shadow-inner" id="modal-badge-emoji">
+🏆
+</div>
+<h2 class="font-display text-2xl font-bold text-slate-900" id="modal-event-name">Rdeča preproga</h2>
+<p class="text-xs font-semibold uppercase tracking-wider text-pink-500 mt-0.5">Ocena modne žirije</p>
+<!-- Stars Row -->
+<div class="flex items-center justify-center gap-1.5 my-4 text-3xl" id="modal-stars">
+<span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span>
+</div>
+<!-- Score Pill -->
+<div class="inline-block bg-gradient-to-r from-pink-500 to-purple-600 text-white font-extrabold text-2xl px-6 py-2 rounded-2xl shadow-md mb-4">
+<span id="modal-score">96</span> / 100 točk
+</div>
+<!-- Feedback Breakdown -->
+<div class="bg-pink-50/80 rounded-2xl p-4 text-left space-y-2 border border-pink-100 mb-5">
+<p class="text-sm font-semibold text-slate-800" id="modal-feedback-main">
+Čudovito! Tvoj videz je popoln za ta dogodek!
+</p>
+<ul class="text-xs text-slate-600 space-y-1" id="modal-feedback-details">
+<!-- Bullet points -->
+</ul>
+</div>
+<!-- Action Buttons -->
+<div class="grid grid-cols-2 gap-3">
+<button onclick="closeModal()" class="py-3 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition active:scale-95">
+✏️ Popravi videz
+</button>
+<button onclick="nextEventFromModal()" class="btn-glam py-3 px-4 rounded-2xl text-white font-bold text-sm">
+Naslednji dogodek ➔
+</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+// ==========================================
+// 1. GAME DATA (SLOVENIAN LOCALIZED)
+// ==========================================
+const EVENTS = [
+{
+id: 'red_carpet',
+name: 'Rdeča preproga',
+icon: '🎬',
+hint: 'Glamurozna večerna obleka, drzna šminka, visoke pete in bleščeč nakit!',
+backdrop: 'linear-gradient(160deg, #4c0519 0%, #881337 45%, #be123c 80%, #fda4af 100%)',
+preferredTags: ['glam', 'evening', 'luxury']
+},
+{
+id: 'beach_party',
+name: 'Zabava na plaži',
+icon: '🌴',
+hint: 'Lahkotna poletna oblačila, sončna očala, sandali in sveža naravna ličila!',
+backdrop: 'linear-gradient(160deg, #0284c7 0%, #38bdf8 45%, #bae6fd 75%, #fde68a 100%)',
+preferredTags: ['beach', 'casual', 'summer']
+},
+{
+id: 'winter_ball',
+name: 'Zimski ples',
+icon: '❄️',
+hint: 'Pravljična princeskina obleka, tiara, hladni odtenki ličil in elegantna frizura!',
+backdrop: 'linear-gradient(160deg, #1e1b4b 0%, #3730a3 45%, #818cf8 75%, #e0e7ff 100%)',
+preferredTags: ['winter', 'princess', 'glam']
+},
+{
+id: 'city_coffee',
+name: 'Kava v mestu',
+icon: '☕',
+hint: 'Moderen mestni stil (chic), torbica, trendovska pričeska in nežen sijaj!',
+backdrop: 'linear-gradient(160deg, #78350f 0%, #d97706 40%, #fed7aa 75%, #fff7ed 100%)',
+preferredTags: ['chic', 'casual', 'modern']
+}
+];
+const HAIR_STYLES = [
+{ id: 'long_waves', name: 'Dolgi valovi', icon: '🌊', tags: ['glam', 'beach', 'princess'] },
+{ id: 'high_bun', name: 'Visoka figa', icon: '🩰', tags: ['glam', 'winter', 'chic'] },
+{ id: 'sleek_bob', name: 'Modni paž', icon: '💇‍♀️', tags: ['chic', 'modern', 'casual'] },
+{ id: 'ponytail', name: 'Visok čop', icon: '🎀', tags: ['casual', 'beach', 'modern'] },
+{ id: 'princess_curls', name: 'Kraljevski kodri', icon: '👑', tags: ['princess', 'winter', 'glam'] },
+{ id: 'twin_braids', name: 'Poletni kitki', icon: '🌸', tags: ['beach', 'casual', 'summer'] }
+];
+const HAIR_COLORS = [
+{ id: 'chestnut', name: 'Kostanjeva', main: '#5c3824', dark: '#3d2214', light: '#7c4d34' },
+{ id: 'blonde', name: 'Zlato blond', main: '#eab308', dark: '#ca8a04', light: '#fde047' },
+{ id: 'raven', name: 'Črna kot noč', main: '#1e293b', dark: '#0f172a', light: '#334155' },
+{ id: 'copper', name: 'Bakreno rdeča', main: '#c2410c', dark: '#9a3412', light: '#ea580c' },
+{ id: 'pastel_pink', name: 'Rožnata', main: '#ec4899', dark: '#be185d', light: '#f472b6' },
+{ id: 'ice_silver', name: 'Ledeno srebrna', main: '#cbd5e1', dark: '#94a3b8', light: '#f1f5f9' }
+];
+const LIP_COLORS = [
+{ id: 'ruby', name: 'Rubinasto rdeča', upper: '#be123c', lower: '#e11d48', tags: ['glam', 'evening'] },
+{ id: 'rose', name: 'Nežno roza', upper: '#db2777', lower: '#f472b6', tags: ['chic', 'princess', 'casual'] },
+{ id: 'coral', name: 'Koralno poletna', upper: '#ea580c', lower: '#fb923c', tags: ['beach', 'summer'] },
+{ id: 'berry', name: 'Slivova', upper: '#701a75', lower: '#a21caf', tags: ['winter', 'glam'] },
+{ id: 'nude', name: 'Naravni sijaj', upper: '#c2786b', lower: '#dfa094', tags: ['casual', 'modern', 'chic'] }
+];
+const EYESHADOW_COLORS = [
+{ id: 'gold_glam', name: 'Zlati lesk', color: '#f59e0b', tags: ['glam', 'evening'] },
+{ id: 'pink_shimmer', name: 'Roza biserna', color: '#ec4899', tags: ['chic', 'princess'] },
+{ id: 'ocean_blue', name: 'Morsko modra', color: '#0ea5e9', tags: ['beach', 'winter'] },
+{ id: 'violet_ice', name: 'Ledeno vijolična', color: '#8b5cf6', tags: ['winter', 'princess'] },
+{ id: 'peach_soft', name: 'Breskova', color: '#fb923c', tags: ['casual', 'summer', 'chic'] }
+];
+const BLUSH_LEVELS = [
+{ id: 'soft', name: 'Nežno', color: '#fda4af', opacity: 0.35 },
+{ id: 'rosy', name: 'Sveže rožnato', color: '#fb7185', opacity: 0.55 },
+{ id: 'sun_kissed', name: 'Sončno zagorelo', color: '#f97316', opacity: 0.45 }
+];
+const OUTFITS = [
+{ id: 'red_gown', name: 'Večerna rdeča toaleta', icon: '💃', tags: ['glam', 'evening', 'luxury'] },
+{ id: 'ice_princess', name: 'Snežna kraljica', icon: '❄️', tags: ['winter', 'princess', 'glam'] },
+{ id: 'beach_bikini_sarong', name: 'Poletni komplet za plažo', icon: '👙', tags: ['beach', 'summer'] },
+{ id: 'floral_sundress', name: 'Cvetlična oblekica', icon: '🌼', tags: ['beach', 'casual', 'summer'] },
+{ id: 'paris_chic', name: 'Pariški suknjič & krilo', icon: '🧥', tags: ['chic', 'modern', 'casual'] },
+{ id: 'cocktail_purple', name: 'Vijolična koktajl obleka', icon: '✨', tags: ['glam', 'chic', 'evening'] },
+{ id: 'denim_trendy', name: 'Mestni top & kavbojke', icon: '👖', tags: ['casual', 'modern', 'chic'] }
+];
+const SHOES = [
+{ id: 'gold_heels', name: 'Zlati salonarji', icon: '👠', color: '#f59e0b', tags: ['glam', 'evening', 'princess'] },
+{ id: 'silver_heels', name: 'Srebrni salonarji', icon: '💎', color: '#cbd5e1', tags: ['winter', 'princess', 'glam'] },
+{ id: 'summer_sandals', name: 'Poletni sandali', icon: '🩴', color: '#fb923c', tags: ['beach', 'summer', 'casual'] },
+{ id: 'chic_boots', name: 'Mestni gležnjarji', icon: '👢', color: '#1e293b', tags: ['chic', 'modern', 'winter'] }
+];
+const HEAD_ACCESSORIES = [
+{ id: 'none', name: 'Brez', icon: '🚫', tags: [] },
+{ id: 'diamond_tiara', name: 'Kristalna tiara', icon: '👑', tags: ['princess', 'winter', 'glam'] },
+{ id: 'sunglasses', name: 'Sončna očala', icon: '🕶️', tags: ['beach', 'summer', 'chic'] },
+{ id: 'flower_crown', name: 'Cvetlični venček', icon: '🌺', tags: ['beach', 'summer', 'casual'] }
+];
+const NECKLACES = [
+{ id: 'none', name: 'Brez', icon: '🚫', tags: [] },
+{ id: 'diamond_choker', name: 'Diamantna ogrlica', icon: '💎', tags: ['glam', 'evening', 'winter'] },
+{ id: 'pearl_strand', name: 'Biserna ogrlica', icon: '⚪', tags: ['chic', 'princess', 'glam'] },
+{ id: 'shell_necklace', name: 'Poletni obesek', icon: '🐚', tags: ['beach', 'summer', 'casual'] }
+];
+const HANDBAGS = [
+{ id: 'none', name: 'Brez', icon: '🚫', tags: [] },
+{ id: 'gold_clutch', name: 'Zlata večerna torbica', icon: '👛', tags: ['glam', 'evening', 'winter'] },
+{ id: 'designer_tote', name: 'Modna mestna torbica', icon: '👜', tags: ['chic', 'modern', 'casual'] },
+{ id: 'straw_bag', name: 'Poletna cekar torba', icon: '🧺', tags: ['beach', 'summer'] }
+];
+// ==========================================
+// 2. GAME STATE
+// ==========================================
+const state = {
+currentEventId: 'red_carpet',
+activeTab: 'hair',
+totalStars: 0,
+completedEvents: {},
+skinFill: '#F3C6A5',
+skinShade: '#E0A680',
+hairStyle: 'long_waves',
+hairColor: 'chestnut',
+lipColor: 'ruby',
+eyeshadow: 'gold_glam',
+blush: 'rosy',
+outfit: 'red_gown',
+shoes: 'gold_heels',
+headAcc: 'diamond_tiara',
+necklace: 'diamond_choker',
+handbag: 'gold_clutch'
+};
+// ==========================================
+// 3. INITIALIZATION & UI RENDERING
+// ==========================================
+function initGame() {
+renderEventSelector();
+updateEventBanner();
+renderTabContent();
+renderAvatar();
+}
+function renderEventSelector() {
+const container = document.getElementById('event-selector');
+container.innerHTML = EVENTS.map(ev => {
+const isSelected = ev.id === state.currentEventId;
+const stars = state.completedEvents[ev.id] || 0;
+return `
+<button onclick="selectEvent('${ev.id}', event)"
+class="flex-shrink-0 px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-2 transition border ${
+isSelected
+? 'bg-pink-600 text-white border-pink-600 shadow-md scale-[1.02]'
+: 'bg-white/90 text-slate-700 border-pink-100 hover:bg-pink-50'
+}">
+<span class="text-base">${ev.icon}</span>
+<span>${ev.name}</span>
+${stars > 0 ? `<span class="text-[11px] px-1.5 py-0.5 rounded-full ${isSelected ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-800'}">${stars}★</span>` : ''}
+</button>
+`;
+}).join('');
+}
+function selectEvent(eventId, e) {
+state.currentEventId = eventId;
+if (e) spawnSparkle(e.clientX, e.clientY, '✨');
+renderEventSelector();
+updateEventBanner();
+}
+function updateEventBanner() {
+const ev = EVENTS.find(x => x.id === state.currentEventId);
+document.getElementById('event-banner-icon').textContent = ev.icon;
+document.getElementById('event-banner-title').textContent = ev.name + ':';
+document.getElementById('event-banner-hint').textContent = ev.hint;
+document.getElementById('stage-backdrop').style.background = ev.backdrop;
+}
+function switchTab(tabName) {
+state.activeTab = tabName;
+document.querySelectorAll('.tab-btn').forEach(btn => {
+if (btn.dataset.tab === tabName) {
+btn.className = 'tab-btn py-2.5 px-2 rounded-xl font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 transition bg-white text-pink-600 shadow-sm';
+} else {
+btn.className = 'tab-btn py-2.5 px-2 rounded-xl font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 transition text-slate-600 hover:text-pink-600';
+}
+});
+renderTabContent();
+}
+function renderTabContent() {
+const container = document.getElementById('tab-content');
+if (state.activeTab === 'hair') {
+container.innerHTML = `
+<div>
+<h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">1. Izberi pričesko</h3>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+${HAIR_STYLES.map(h => `
+<button onclick="setOption('hairStyle', '${h.id}', event)"
+class="option-tile p-3 rounded-2xl border-2 text-left flex items-center gap-2.5 ${
+state.hairStyle === h.id
+? 'border-pink-500 bg-pink-50/90 shadow-sm'
+: 'border-slate-100 bg-white hover:border-pink-200'
+}">
+<span class="text-2xl">${h.icon}</span>
+<span class="text-xs sm:text-sm font-bold text-slate-800 leading-tight">${h.name}</span>
+</button>
+`).join('')}
+</div>
+</div>
+<div>
+<h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">2. Barva las</h3>
+<div class="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
+${HAIR_COLORS.map(c => `
+<button onclick="setOption('hairColor', '${c.id}', event)"
+class="option-tile p-2.5 rounded-2xl border-2 flex flex-col items-center gap-1.5 ${
+state.hairColor === c.id
+? 'border-pink-500 bg-pink-50/90 shadow-sm'
+: 'border-slate-100 bg-white hover:border-pink-200'
+}">
+<span class="w-8 h-8 rounded-full shadow-inner border border-black/10" style="background: linear-gradient(135deg, ${c.light}, ${c.main}, ${c.dark})"></span>
+<span class="text-[11px] font-semibold text-slate-700 text-center leading-tight">${c.name}</span>
+</button>
+`).join('')}
+</div>
+</div>
+`;
+} else if (state.activeTab === 'makeup') {
+container.innerHTML = `
+<div>
+<h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">1. Šminka za ustnice</h3>
+<div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+${LIP_COLORS.map(l => `
+<button onclick="setOption('lipColor', '${l.id}', event)"
+class="option-tile p-2.5 rounded-2xl border-2 flex flex-col items-center gap-1.5 ${
+state.lipColor === l.id
+? 'border-pink-500 bg-pink-50/90 shadow-sm'
+: 'border-slate-100 bg-white hover:border-pink-200'
+}">
+<span class="w-7 h-7 rounded-full shadow-sm border border-white" style="background: linear-gradient(180deg, ${l.upper}, ${l.lower})"></span>
+<span class="text-[11px] font-semibold text-slate-700 text-center leading-tight">${l.name}</span>
+</button>
+`).join('')}
+</div>
+</div>
+<div>
+<h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">2. Senčilo za veke</h3>
+<div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+${EYESHADOW_COLORS.map(es => `
+<button onclick="setOption('eyeshadow', '${es.id}', event)"
+class="option-tile p-2.5 rounded-2xl border-2 flex flex-col items-center gap-1.5 ${
+state.eyeshadow === es.id
+? 'border-pink-500 bg-pink-50/90 shadow-sm'
+: 'border-slate-100 bg-white hover:border-pink-200'
+}">
+<span class="w-7 h-7 rounded-full shadow-sm border border-white" style="background: ${es.color}"></span>
+<span class="text-[11px] font-semibold text-slate-700 text-center leading-tight">${es.name}</span>
+</button>
+`).join('')}
+</div>
+</div>
+<div>
+<h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">3. Rdečilo za lica</h3>
+<div class="grid grid-cols-3 gap-2.5">
+${BLUSH_LEVELS.map(b => `
+<button onclick="setOption('blush', '${b.id}', event)"
+class="option-tile p-2.5 rounded-2xl border-2 flex items-center justify-center gap-2 ${
+state.blush === b.id
+? 'border-pink-500 bg-pink-50/90 shadow-sm'
+: 'border-slate-100 bg-white hover:border-pink-200'
+}">
+<span class="w-5 h-5 rounded-full" style="background: ${b.color}; opacity: ${b.opacity + 0.3}"></span>
+<span class="text-xs font-bold text-slate-700">${b.name}</span>
+</button>
+`).join('')}
+</div>
+</div>
+`;
+} else if (state.activeTab === 'outfit') {
+container.innerHTML = `
+<div>
+<h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">1. Izberi obleko ali komplet</h3>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+${OUTFITS.map(o => `
+<button onclick="setOption('outfit', '${o.id}', event)"
+class="option-tile p-3 rounded-2xl border-2 text-left flex items-center gap-2.5 ${
+state.outfit === o.id
+? 'border-pink-500 bg-pink-50/90 shadow-sm'
+: 'border-slate-100 bg-white hover:border-pink-200'
+}">
+<span class="text-2xl">${o.icon}</span>
+<span class="text-xs sm:text-sm font-bold text-slate-800 leading-tight">${o.name}</span>
+</button>
+`).join('')}
+</div>
+</div>
+<div>
+<h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">2. Obutev</h3>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+${SHOES.map(s => `
+<button onclick="setOption('shoes', '${s.id}', event)"
+class="option-tile p-2.5 rounded-2xl border-2 flex flex-col items-center gap-1 ${
+state.shoes === s.id
+? 'border-pink-500 bg-pink-50/90 shadow-sm'
+: 'border-slate-100 bg-white hover:border-pink-200'
+}">
+<span class="text-xl">${s.icon}</span>
+<span class="text-[11px] font-bold text-slate-700 text-center leading-tight">${s.name}</span>
+</button>
+`).join('')}
+</div>
+</div>
+`;
+} else if (state.activeTab === 'accessories') {
+container.innerHTML = `
+<div>
+<h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">1. Naglavni okras / Očala</h3>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+${HEAD_ACCESSORIES.map(a => `
+<button onclick="setOption('headAcc', '${a.id}', event)"
+class="option-tile p-2.5 rounded-2xl border-2 flex flex-col items-center gap-1 ${
+state.headAcc === a.id
+? 'border-pink-500 bg-pink-50/90 shadow-sm'
+: 'border-slate-100 bg-white hover:border-pink-200'
+}">
+<span class="text-xl">${a.icon}</span>
+<span class="text-[11px] font-bold text-slate-700 text-center leading-tight">${a.name}</span>
+</button>
+`).join('')}
+</div>
+</div>
+<div>
+<h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">2. Ogrlica</h3>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+${NECKLACES.map(n => `
+<button onclick="setOption('necklace', '${n.id}', event)"
+class="option-tile p-2.5 rounded-2xl border-2 flex flex-col items-center gap-1 ${
+state.necklace === n.id
+? 'border-pink-500 bg-pink-50/90 shadow-sm'
+: 'border-slate-100 bg-white hover:border-pink-200'
+}">
+<span class="text-xl">${n.icon}</span>
+<span class="text-[11px] font-bold text-slate-700 text-center leading-tight">${n.name}</span>
+</button>
+`).join('')}
+</div>
+</div>
+<div>
+<h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">3. Torbica</h3>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+${HANDBAGS.map(b => `
+<button onclick="setOption('handbag', '${b.id}', event)"
+class="option-tile p-2.5 rounded-2xl border-2 flex flex-col items-center gap-1 ${
+state.handbag === b.id
+? 'border-pink-500 bg-pink-50/90 shadow-sm'
+: 'border-slate-100 bg-white hover:border-pink-200'
+}">
+<span class="text-xl">${b.icon}</span>
+<span class="text-[11px] font-bold text-slate-700 text-center leading-tight">${b.name}</span>
+</button>
+`).join('')}
+</div>
+</div>
+`;
+}
+}
+function setOption(key, value, e) {
+state[key] = value;
+if (e) {
+const emojis = ['💖', '✨', '🌸', '💫'];
+const pick = emojis[Math.floor(Math.random() * emojis.length)];
+spawnSparkle(e.clientX, e.clientY, pick);
+}
+renderTabContent();
+renderAvatar();
+}
+function setSkinTone(fill, shade, e) {
+state.skinFill = fill;
+state.skinShade = shade;
+if (e) spawnSparkle(e.clientX, e.clientY, '✨');
+renderAvatar();
+}
+// ==========================================
+// 4. LAYERED SVG AVATAR RENDERER
+// ==========================================
+function renderAvatar() {
+// 1. Skin Tone
+document.querySelectorAll('.skin-fill').forEach(el => el.setAttribute('fill', state.skinFill));
+document.querySelectorAll('.skin-shade').forEach(el => el.setAttribute('fill', state.skinShade));
+// 2. Hair Color & Style
+const hCol = HAIR_COLORS.find(c => c.id === state.hairColor);
+document.querySelectorAll('.brow-stroke').forEach(el => el.setAttribute('stroke', hCol.dark));
+renderHairSVG(state.hairStyle, hCol);
+// 3. Makeup
+const lip = LIP_COLORS.find(l => l.id === state.lipColor);
+document.getElementById('lip-upper').setAttribute('fill', lip.upper);
+document.getElementById('lip-lower').setAttribute('fill', lip.lower);
+const eyeSh = EYESHADOW_COLORS.find(e => e.id === state.eyeshadow);
+document.getElementById('eyeshadow-left').setAttribute('fill', eyeSh.color);
+document.getElementById('eyeshadow-right').setAttribute('fill', eyeSh.color);
+const blush = BLUSH_LEVELS.find(b => b.id === state.blush);
+const bLeft = document.getElementById('blush-left');
+const bRight = document.getElementById('blush-right');
+bLeft.setAttribute('fill', blush.color);
+bLeft.setAttribute('opacity', blush.opacity);
+bRight.setAttribute('fill', blush.color);
+bRight.setAttribute('opacity', blush.opacity);
+// 4. Outfit & Shoes
+renderShoesSVG(state.shoes);
+renderOutfitSVG(state.outfit);
+// 5. Accessories
+renderNecklaceSVG(state.necklace);
+renderHeadAccSVG(state.headAcc);
+renderHandbagSVG(state.handbag);
+}
+function renderHairSVG(style, col) {
+const backLayer = document.getElementById('layer-hair-back');
+const frontLayer = document.getElementById('layer-hair-front');
+let backHTML = '';
+let frontHTML = '';
+if (style === 'long_waves') {
+backHTML = `
+<path d="M118 72 C95 110, 92 185, 108 245 C118 265, 132 260, 136 240 L184 240 C188 260, 202 265, 212 245 C228 185, 225 110, 202 72 Z" fill="${col.dark}" />
+<path d="M122 76 C103 115, 102 180, 114 238 C122 250, 132 245, 136 225 L184 225 C188 245, 198 250, 206 238 C218 180, 217 115, 198 76 Z" fill="${col.main}" />
+`;
+frontHTML = `
+<path d="M124 78 C124 44, 196 44, 196 78 C192 62, 174 58, 160 66 C146 58, 128 62, 124 78 Z" fill="${col.main}" />
+<path d="M125 72 C116 105, 116 155, 126 195 C131 160, 131 112, 133 82 Z" fill="${col.light}" />
+<path d="M195 72 C204 105, 204 155, 194 195 C189 160, 189 112, 187 82 Z" fill="${col.light}" />
+`;
+} else if (style === 'high_bun') {
+backHTML = `
+<circle cx="160" cy="36" r="24" fill="${col.dark}" />
+<circle cx="160" cy="35" r="20" fill="${col.main}" />
+<path d="M144 30 Q160 20 176 30" stroke="${col.light}" stroke-width="3" fill="none" stroke-linecap="round" />
+`;
+frontHTML = `
+<path d="M125 78 C125 46, 195 46, 195 78 C186 60, 134 60, 125 78 Z" fill="${col.main}" />
+<path d="M142 54 Q160 48 178 54" stroke="${col.dark}" stroke-width="3" fill="none" />
+`;
+} else if (style === 'sleek_bob') {
+backHTML = `
+<path d="M120 75 C112 105, 112 132, 125 142 L195 142 C208 132, 208 105, 200 75 Z" fill="${col.dark}" />
+`;
+frontHTML = `
+<path d="M122 78 C122 44, 198 44, 198 78 C203 108, 199 134, 188 140 C191 114, 191 88, 185 74 C168 68, 145 70, 134 76 C129 90, 129 114, 132 140 C121 134, 117 108, 122 78 Z" fill="${col.main}" />
+<path d="M136 62 Q162 56 184 64" stroke="${col.light}" stroke-width="2.5" fill="none" stroke-linecap="round" />
+`;
+} else if (style === 'ponytail') {
+backHTML = `
+<path d="M168 48 C205 55, 224 105, 212 168 C205 150, 198 110, 185 75 Z" fill="${col.dark}" />
+<path d="M166 50 C200 58, 216 102, 206 158 C199 140, 192 105, 182 74 Z" fill="${col.main}" />
+`;
+frontHTML = `
+<path d="M125 78 C125 46, 195 46, 195 78 C184 61, 136 61, 125 78 Z" fill="${col.main}" />
+<circle cx="176" cy="54" r="6" fill="#ec4899" />
+`;
+} else if (style === 'princess_curls') {
+backHTML = `
+<path d="M114 76 C92 110, 90 175, 108 228 C122 242, 136 232, 138 214 L182 214 C184 232, 198 242, 212 228 C230 175, 228 110, 206 76 Z" fill="${col.dark}" />
+<circle cx="108" cy="145" r="16" fill="${col.main}" />
+<circle cx="105" cy="178" r="18" fill="${col.main}" />
+<circle cx="112" cy="212" r="16" fill="${col.main}" />
+<circle cx="212" cy="145" r="16" fill="${col.main}" />
+<circle cx="215" cy="178" r="18" fill="${col.main}" />
+<circle cx="208" cy="212" r="16" fill="${col.main}" />
+`;
+frontHTML = `
+<path d="M123 78 C123 44, 197 44, 197 78 C186 58, 168 62, 160 68 C152 62, 134 58, 123 78 Z" fill="${col.main}" />
+<path d="M125 74 C114 98, 114 128, 124 150 C130 128, 130 98, 132 78 Z" fill="${col.light}" />
+<path d="M195 74 C206 98, 206 128, 196 150 C190 128, 190 98, 188 78 Z" fill="${col.light}" />
+`;
+} else if (style === 'twin_braids') {
+backHTML = `
+<path d="M122 78 C116 95, 116 115, 124 128 L196 128 C204 115, 204 95, 198 78 Z" fill="${col.dark}" />
+`;
+frontHTML = `
+<path d="M124 78 C124 45, 196 45, 196 78 C182 60, 138 60, 124 78 Z" fill="${col.main}" />
+<!-- Left Braid -->
+<g fill="${col.main}" stroke="${col.dark}" stroke-width="1.2">
+<circle cx="122" cy="115" r="8" />
+<circle cx="120" cy="130" r="8" />
+<circle cx="119" cy="145" r="7.5" />
+<circle cx="118" cy="160" r="7" />
+<circle cx="118" cy="174" r="6" />
+</g>
+<rect x="113" y="178" width="10" height="4" rx="2" fill="#f43f5e" />
+<!-- Right Braid -->
+<g fill="${col.main}" stroke="${col.dark}" stroke-width="1.2">
+<circle cx="198" cy="115" r="8" />
+<circle cx="200" cy="130" r="8" />
+<circle cx="201" cy="145" r="7.5" />
+<circle cx="202" cy="160" r="7" />
+<circle cx="202" cy="174" r="6" />
+</g>
+<rect x="197" y="178" width="10" height="4" rx="2" fill="#f43f5e" />
+`;
+}
+backLayer.innerHTML = backHTML;
+frontLayer.innerHTML = frontHTML;
+}
+function renderShoesSVG(shoeId) {
+const layer = document.getElementById('layer-shoes');
+const shoe = SHOES.find(s => s.id === shoeId);
+if (shoeId === 'chic_boots') {
+layer.innerHTML = `
+<path d="M134 388 L151 388 L150 426 L133 426 Z" fill="${shoe.color}" />
+<path d="M169 388 L186 388 L187 426 L170 426 Z" fill="${shoe.color}" />
+<line x1="134" y1="395" x2="151" y2="395" stroke="#94a3b8" stroke-width="1.5" />
+<line x1="169" y1="395" x2="186" y2="395" stroke="#94a3b8" stroke-width="1.5" />
+`;
+} else if (shoeId === 'summer_sandals') {
+layer.innerHTML = `
+<path d="M135 420 L150 420 L151 426 L134 426 Z" fill="${shoe.color}" />
+<path d="M170 420 L185 420 L186 426 L169 426 Z" fill="${shoe.color}" />
+<path d="M136 413 L149 418 M136 418 L149 413" stroke="${shoe.color}" stroke-width="2" />
+<path d="M171 413 L184 418 M171 418 L184 413" stroke="${shoe.color}" stroke-width="2" />
+`;
+} else {
+// Glam Heels (Gold or Silver)
+layer.innerHTML = `
+<path d="M136 410 L150 410 L150 426 L134 426 C134 420, 136 415, 136 410 Z" fill="${shoe.color}" />
+<path d="M170 410 L184 410 C184 415, 186 420, 186 426 L170 426 Z" fill="${shoe.color}" />
+<line x1="136" y1="406" x2="150" y2="406" stroke="${shoe.color}" stroke-width="2" />
+<line x1="170" y1="406" x2="184" y2="406" stroke="${shoe.color}" stroke-width="2" />
+`;
+}
+}
+function renderOutfitSVG(outfitId) {
+const layer = document.getElementById('layer-outfit');
+if (outfitId === 'red_gown') {
+layer.innerHTML = `
+<!-- Bodice -->
+<path d="M134 162 Q147 170 160 164 Q173 170 186 162 L182 210 L138 210 Z" fill="#be123c" />
+<!-- Flowing Glam Skirt with Slit -->
+<path d="M138 210 L182 210 L216 408 L168 408 L164 285 L155 408 L104 408 Z" fill="#e11d48" />
+<!-- Satin Folds -->
+<path d="M148 210 L132 408 M172 210 L192 408" stroke="#9f1239" stroke-width="2" opacity="0.5" />
+<!-- Gold Waist Belt -->
+<rect x="137" y="206" width="46" height="6" rx="3" fill="#fbbf24" />
+`;
+} else if (outfitId === 'ice_princess') {
+layer.innerHTML = `
+<!-- Off-shoulder sheer sleeves -->
+<path d="M123 160 Q160 172 197 160 L194 170 Q160 180 126 170 Z" fill="#e0f2fe" opacity="0.9" />
+<!-- Corset Bodice -->
+<path d="M135 164 L185 164 L181 210 L139 210 Z" fill="#38bdf8" />
+<!-- Big Ballgown Skirt -->
+<path d="M139 210 L181 210 C215 265, 224 345, 220 406 L100 406 C96 345, 105 265, 139 210 Z" fill="#7dd3fc" />
+<path d="M146 210 C130 280, 125 350, 128 406 L192 406 C195 350, 190 280, 174 210 Z" fill="#bae6fd" opacity="0.65" />
+<!-- Sparkles on dress -->
+<circle cx="145" cy="270" r="2.5" fill="#ffffff" />
+<circle cx="176" cy="295" r="2.5" fill="#ffffff" />
+<circle cx="158" cy="340" r="3" fill="#ffffff" />
+<circle cx="132" cy="365" r="2" fill="#ffffff" />
+<circle cx="188" cy="360" r="2" fill="#ffffff" />
+`;
+} else if (outfitId === 'beach_bikini_sarong') {
+layer.innerHTML = `
+<!-- Tropical Bikini Top -->
+<path d="M134 166 Q147 182 160 172 Q173 182 186 166 L183 185 Q160 188 137 185 Z" fill="#f97316" />
+<path d="M142 166 L146 150 M178 166 L174 150" stroke="#f97316" stroke-width="2.5" />
+<!-- Sheer Tropical Sarong Wrap -->
+<path d="M133 236 L187 236 L198 338 L164 312 L124 344 Z" fill="#06b6d4" opacity="0.88" />
+<path d="M133 236 Q160 245 187 236" stroke="#fde047" stroke-width="4" fill="none" />
+`;
+} else if (outfitId === 'floral_sundress') {
+layer.innerHTML = `
+<!-- Straps -->
+<line x1="141" y1="150" x2="141" y2="165" stroke="#f43f5e" stroke-width="3" />
+<line x1="179" y1="150" x2="179" y2="165" stroke="#f43f5e" stroke-width="3" />
+<!-- Flowing Summer Sundress -->
+<path d="M135 164 L185 164 L182 208 L204 316 L116 316 L138 208 Z" fill="#fef08a" />
+<!-- Floral Dots -->
+<circle cx="148" cy="186" r="4" fill="#fb7185" />
+<circle cx="171" cy="192" r="4" fill="#fb7185" />
+<circle cx="142" cy="245" r="5" fill="#fb7185" />
+<circle cx="164" cy="262" r="5" fill="#f472b6" />
+<circle cx="180" cy="238" r="4.5" fill="#fb7185" />
+<circle cx="135" cy="292" r="5" fill="#f472b6" />
+<circle cx="175" cy="295" r="5" fill="#fb7185" />
+<!-- Ribbon Belt -->
+<rect x="137" y="205" width="46" height="5" rx="2.5" fill="#f43f5e" />
+`;
+} else if (outfitId === 'paris_chic') {
+layer.innerHTML = `
+<!-- White Inner Top -->
+<path d="M138 162 L182 162 L180 212 L140 212 Z" fill="#ffffff" />
+<!-- Pink Tweed Blazer Jacket -->
+<path d="M126 156 L145 156 L154 214 L132 214 Z" fill="#ec4899" />
+<path d="M194 156 L175 156 L166 214 L188 214 Z" fill="#ec4899" />
+<!-- Chic Pleated Mini Skirt -->
+<path d="M137 212 L183 212 L196 292 L124 292 Z" fill="#1e293b" />
+<line x1="150" y1="212" x2="145" y2="292" stroke="#334155" stroke-width="2" />
+<line x1="170" y1="212" x2="175" y2="292" stroke="#334155" stroke-width="2" />
+`;
+} else if (outfitId === 'cocktail_purple') {
+layer.innerHTML = `
+<!-- Asymmetric One-Shoulder Cocktail Dress -->
+<path d="M135 154 L184 172 L181 212 L198 310 L122 310 L139 212 Z" fill="#9333ea" />
+<path d="M139 212 Q160 222 181 212" stroke="#e9d5ff" stroke-width="3" fill="none" />
+<path d="M145 230 L188 275" stroke="#c084fc" stroke-width="2" opacity="0.6" />
+`;
+} else if (outfitId === 'denim_trendy') {
+layer.innerHTML = `
+<!-- Cute Crop Top -->
+<path d="M134 160 L186 160 L183 196 L137 196 Z" fill="#f43f5e" />
+<!-- High-Waisted Stylish Jeans -->
+<path d="M135 212 L185 212 L191 275 L186 392 L170 392 L162 275 L158 275 L150 392 L134 392 L129 275 Z" fill="#2563eb" />
+<line x1="160" y1="214" x2="160" y2="274" stroke="#1d4ed8" stroke-width="2" />
+<rect x="135" y="212" width="50" height="5" fill="#1e3a8a" />
+`;
+}
+}
+function renderNecklaceSVG(id) {
+const layer = document.getElementById('layer-necklace');
+if (id === 'none') {
+layer.innerHTML = '';
+} else if (id === 'diamond_choker') {
+layer.innerHTML = `
+<path d="M148 136 Q160 144 172 136" stroke="#e2e8f0" stroke-width="3" fill="none" />
+<polygon points="160,141 164,146 160,151 156,146" fill="#38bdf8" stroke="#ffffff" stroke-width="1" />
+`;
+} else if (id === 'pearl_strand') {
+layer.innerHTML = `
+<circle cx="148" cy="138" r="2.4" fill="#ffffff" />
+<circle cx="154" cy="142" r="2.6" fill="#ffffff" />
+<circle cx="160" cy="143" r="2.8" fill="#ffffff" />
+<circle cx="166" cy="142" r="2.6" fill="#ffffff" />
+<circle cx="172" cy="138" r="2.4" fill="#ffffff" />
+`;
+} else if (id === 'shell_necklace') {
+layer.innerHTML = `
+<path d="M148 136 Q160 148 172 136" stroke="#d97706" stroke-width="1.8" fill="none" />
+<circle cx="160" cy="146" r="4" fill="#fef08a" stroke="#f59e0b" stroke-width="1" />
+`;
+}
+}
+function renderHeadAccSVG(id) {
+const layer = document.getElementById('layer-head-acc');
+if (id === 'none') {
+layer.innerHTML = '';
+} else if (id === 'diamond_tiara') {
+layer.innerHTML = `
+<path d="M138 56 L146 44 L153 52 L160 38 L167 52 L174 44 L182 56 Z" fill="#fde047" stroke="#f59e0b" stroke-width="1.2" />
+<circle cx="160" cy="48" r="2.5" fill="#ec4899" />
+<circle cx="147" cy="51" r="1.8" fill="#38bdf8" />
+<circle cx="173" cy="51" r="1.8" fill="#38bdf8" />
+`;
+} else if (id === 'sunglasses') {
+layer.innerHTML = `
+<rect x="131" y="80" width="24" height="13" rx="5" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" />
+<rect x="165" y="80" width="24" height="13" rx="5" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" />
+<line x1="155" y1="84" x2="165" y2="84" stroke="#f59e0b" stroke-width="2" />
+<line x1="135" y1="83" x2="143" y2="90" stroke="#ffffff" stroke-width="1.5" opacity="0.45" />
+<line x1="169" y1="83" x2="177" y2="90" stroke="#ffffff" stroke-width="1.5" opacity="0.45" />
+`;
+} else if (id === 'flower_crown') {
+layer.innerHTML = `
+<circle cx="136" cy="60" r="6" fill="#fb7185" />
+<circle cx="136" cy="60" r="2" fill="#fde047" />
+<circle cx="151" cy="55" r="7" fill="#f472b6" />
+<circle cx="151" cy="55" r="2.5" fill="#fde047" />
+<circle cx="169" cy="55" r="7" fill="#fb923c" />
+<circle cx="169" cy="55" r="2.5" fill="#ffffff" />
+<circle cx="184" cy="60" r="6" fill="#fb7185" />
+<circle cx="184" cy="60" r="2" fill="#fde047" />
+`;
+}
+}
+function renderHandbagSVG(id) {
+const layer = document.getElementById('layer-hand-acc');
+if (id === 'none') {
+layer.innerHTML = '';
+} else if (id === 'gold_clutch') {
+layer.innerHTML = `
+<rect x="195" y="232" width="26" height="16" rx="4" fill="#fbbf24" stroke="#d97706" stroke-width="1.5" />
+<circle cx="208" cy="238" r="2" fill="#ffffff" />
+`;
+} else if (id === 'designer_tote') {
+layer.innerHTML = `
+<path d="M201 232 C201 222, 215 222, 215 232" stroke="#be185d" stroke-width="2.5" fill="none" />
+<polygon points="196,232 220,232 223,254 193,254" fill="#ec4899" stroke="#be185d" stroke-width="1.5" />
+<rect x="205" y="239" width="6" height="6" rx="1" fill="#fde047" />
+`;
+} else if (id === 'straw_bag') {
+layer.innerHTML = `
+<path d="M200 232 C200 220, 216 220, 216 232" stroke="#92400e" stroke-width="2.5" fill="none" />
+<path d="M194 232 L222 232 L218 256 L198 256 Z" fill="#fcd34d" stroke="#d97706" stroke-width="1.5" />
+<circle cx="208" cy="244" r="4" fill="#fb7185" />
+`;
+}
+}
+// ==========================================
+// 5. RANDOMIZE & RESET HELPERS
+// ==========================================
+function pickRandom(arr) {
+return arr[Math.floor(Math.random() * arr.length)].id;
+}
+function randomizeLook(e) {
+state.hairStyle = pickRandom(HAIR_STYLES);
+state.hairColor = pickRandom(HAIR_COLORS);
+state.lipColor = pickRandom(LIP_COLORS);
+state.eyeshadow = pickRandom(EYESHADOW_COLORS);
+state.blush = pickRandom(BLUSH_LEVELS);
+state.outfit = pickRandom(OUTFITS);
+state.shoes = pickRandom(SHOES);
+state.headAcc = pickRandom(HEAD_ACCESSORIES);
+state.necklace = pickRandom(NECKLACES);
+state.handbag = pickRandom(HANDBAGS);
+if (e) spawnSparkle(e.clientX, e.clientY, '🎲');
+renderTabContent();
+renderAvatar();
+}
+function resetLook(e) {
+state.hairStyle = 'sleek_bob';
+state.hairColor = 'chestnut';
+state.lipColor = 'nude';
+state.eyeshadow = 'peach_soft';
+state.blush = 'soft';
+state.outfit = 'denim_trendy';
+state.shoes = 'chic_boots';
+state.headAcc = 'none';
+state.necklace = 'none';
+state.handbag = 'none';
+if (e) spawnSparkle(e.clientX, e.clientY, '↺');
+renderTabContent();
+renderAvatar();
+}
+// ==========================================
+// 6. EVENT EVALUATION & SCORING ENGINE
+// ==========================================
+function evaluateLook() {
+const ev = EVENTS.find(x => x.id === state.currentEventId);
+const preferred = ev.preferredTags;
+let score = 45; // Base score for showing up styled
+const feedbackNotes = [];
+// Check Outfit (High weight: up to +25)
+const outfitObj = OUTFITS.find(o => o.id === state.outfit);
+const outfitMatch = outfitObj.tags.filter(t => preferred.includes(t)).length;
+if (outfitMatch >= 2) {
+score += 25;
+feedbackNotes.push(`✅ Obleka (${outfitObj.name}) se popolnoma ujema z dogodkom!`);
+} else if (outfitMatch === 1) {
+score += 16;
+feedbackNotes.push(`👍 Obleka (${outfitObj.name}) je lepa izbira.`);
+} else {
+score += 5;
+feedbackNotes.push(`💡 Za dogodek "${ev.name}" poskusi bolj primerno obleko.`);
+}
+// Check Hair (up to +12)
+const hairObj = HAIR_STYLES.find(h => h.id === state.hairStyle);
+const hairMatch = hairObj.tags.some(t => preferred.includes(t));
+if (hairMatch) {
+score += 12;
+feedbackNotes.push(`✅ Frizura (${hairObj.name}) čudovito dopolni stil.`);
+} else {
+score += 6;
+}
+// Check Makeup (up to +10)
+const lipObj = LIP_COLORS.find(l => l.id === state.lipColor);
+const eyeObj = EYESHADOW_COLORS.find(e => e.id === state.eyeshadow);
+if (lipObj.tags.some(t => preferred.includes(t)) || eyeObj.tags.some(t => preferred.includes(t))) {
+score += 10;
+feedbackNotes.push(`✅ Ličila so odlično usklajena z vzdušjem dogodka!`);
+} else {
+score += 5;
+}
+// Check Shoes & Accessories (up to +8)
+const shoeObj = SHOES.find(s => s.id === state.shoes);
+const headObj = HEAD_ACCESSORIES.find(h => h.id === state.headAcc);
+const bagObj = HANDBAGS.find(b => b.id === state.handbag);
+let accBonus = 0;
+if (shoeObj.tags.some(t => preferred.includes(t))) accBonus += 3;
+if (headObj.id !== 'none' && headObj.tags.some(t => preferred.includes(t))) accBonus += 3;
+if (bagObj.id !== 'none' && bagObj.tags.some(t => preferred.includes(t))) accBonus += 2;
+score += accBonus;
+if (accBonus >= 5) {
+feedbackNotes.push(`✅ Modni dodatki in čevlji so pika na i!`);
+} else if (state.headAcc === 'none' && state.necklace === 'none' && state.handbag === 'none') {
+feedbackNotes.push(`💡 Dodaj še kakšen nakit ali torbico za višjo oceno.`);
+}
+score = Math.min(100, Math.max(50, score));
+// Calculate Stars
+let stars = 3;
+let headline = 'Zelo lep videz! Še malo pa bo popolno.';
+let badge = '✨';
+if (score >= 93) {
+stars = 5;
+headline = 'ČISTA POPOLNOST! Zvezda večera si!';
+badge = '👑';
+} else if (score >= 82) {
+stars = 4;
+headline = 'Čudovito! Žirija je navdušena nad tvojim stilom!';
+badge = '🏆';
+} else if (score >= 70) {
+stars = 3;
+headline = 'Simpatičen stil! Poskusi še bolje ujeti temo dogodka.';
+badge = '💖';
+} else {
+stars = 2;
+headline = 'Dober poskus! Preveri namig zgoraj za več točk.';
+badge = '🌸';
+}
+// Save best stars for event
+const prevBest = state.completedEvents[ev.id] || 0;
+if (stars > prevBest) {
+state.completedEvents[ev.id] = stars;
+}
+state.totalStars = Object.values(state.completedEvents).reduce((a, b) => a + b, 0);
+document.getElementById('total-stars-display').textContent = `${state.totalStars} ★`;
+renderEventSelector();
+// Populate Modal
+document.getElementById('modal-event-name').textContent = ev.name;
+document.getElementById('modal-badge-emoji').textContent = badge;
+document.getElementById('modal-score').textContent = score;
+document.getElementById('modal-feedback-main').textContent = headline;
+let starsHTML = '';
+for (let i = 1; i <= 5; i++) {
+starsHTML += `<span class="${i <= stars ? 'opacity-100 scale-110' : 'opacity-25 grayscale'} transition">⭐</span>`;
+}
+document.getElementById('modal-stars').innerHTML = starsHTML;
+document.getElementById('modal-feedback-details').innerHTML = feedbackNotes
+.map(note => `<li>${note}</li>`)
+.join('');
+// Show Modal
+const modal = document.getElementById('result-modal');
+modal.classList.remove('hidden');
+modal.classList.add('flex');
+if (stars >= 4) {
+launchConfetti();
+}
+}
+function closeModal() {
+const modal = document.getElementById('result-modal');
+modal.classList.add('hidden');
+modal.classList.remove('flex');
+}
+function nextEventFromModal() {
+closeModal();
+const idx = EVENTS.findIndex(e => e.id === state.currentEventId);
+const nextIdx = (idx + 1) % EVENTS.length;
+selectEvent(EVENTS[nextIdx].id);
+}
+// ==========================================
+// 7. VISUAL EFFECTS (SPARKLES & CONFETTI)
+// ==========================================
+function spawnSparkle(x, y, symbol = '✨') {
+if (!x || !y) return;
+const el = document.createElement('div');
+el.className = 'sparkle-burst text-xl';
+el.textContent = symbol;
+el.style.left = `${x}px`;
+el.style.top = `${y}px`;
+document.body.appendChild(el);
+setTimeout(() => el.remove(), 900);
+}
+function launchConfetti() {
+const canvas = document.getElementById('confetti-canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const colors = ['#ec4899', '#f59e0b', '#a855f7', '#38bdf8', '#f43f5e', '#fde047'];
+const pieces = Array.from({ length: 90 }, () => ({
+x: Math.random() * canvas.width,
+y: Math.random() * canvas.height - canvas.height,
+w: Math.random() * 9 + 5,
+h: Math.random() * 6 + 4,
+color: colors[Math.floor(Math.random() * colors.length)],
+vy: Math.random() * 3.5 + 2.5,
+vx: (Math.random() - 0.5) * 2.5,
+rot: Math.random() * 360,
+vRot: (Math.random() - 0.5) * 8
+}));
+let frame = 0;
+function animate() {
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+pieces.forEach(p => {
+p.y += p.vy;
+p.x += p.vx;
+p.rot += p.vRot;
+ctx.save();
+ctx.translate(p.x, p.y);
+ctx.rotate((p.rot * Math.PI) / 180);
+ctx.fillStyle = p.color;
+ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+ctx.restore();
+});
+frame++;
+if (frame < 130) {
+requestAnimationFrame(animate);
+} else {
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+}
+animate();
+}
+// Start game on load
+window.addEventListener('DOMContentLoaded', initGame);
+</script>
+</body>
+</html>
